@@ -36,6 +36,15 @@ AI_PROXY_URL = "https://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
 def analyze_dataset(file_path):
     """
     Analyze the dataset and return summaries, statistics, and insights.
+    
+    Args:
+        file_path (str): Path to the CSV file to analyze.
+    
+    Returns:
+        df (DataFrame): The dataset in a pandas DataFrame.
+        summary (dict): A dictionary containing basic information about the dataset.
+        numeric_summary (dict): A statistical summary of numeric columns.
+        correlation_matrix (DataFrame): Correlation matrix of numeric columns.
     """
     try:
         # Load dataset with explicit encoding
@@ -70,6 +79,14 @@ def analyze_dataset(file_path):
 def visualize_dataset(df, correlation_matrix, file_path):
     """
     Generate visualizations specific to the dataset and save as PNG files.
+    
+    Args:
+        df (DataFrame): The dataset to generate visualizations for.
+        correlation_matrix (DataFrame): The correlation matrix for the dataset.
+        file_path (str): The path to the dataset file.
+    
+    Returns:
+        charts (list): A list of generated chart file names.
     """
     charts = []
     dataset_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -260,10 +277,18 @@ def visualize_dataset(df, correlation_matrix, file_path):
     return charts
 
 
-
 def generate_story(summary, numeric_summary, charts, file_path):
     """
     Use the AI Proxy (GPT-4o-Mini) to generate a story about the analysis.
+    
+    Args:
+        summary (dict): Summary of the dataset.
+        numeric_summary (dict): Statistical summary of numeric columns.
+        charts (list): List of visualizations created.
+        file_path (str): Path to the dataset file.
+    
+    Returns:
+        story (str): A detailed analysis report.
     """
     dataset_type = "Goodreads dataset" if "goodreads" in file_path.lower() else (
         "Happiness dataset" if "happiness" in file_path.lower() else "Media dataset"
@@ -310,6 +335,11 @@ def generate_story(summary, numeric_summary, charts, file_path):
 def save_readme(story, charts, dataset_name):
     """
     Save the story and charts into a dataset-specific README file.
+    
+    Args:
+        story (str): The generated story from the AI.
+        charts (list): List of chart file names.
+        dataset_name (str): Name of the dataset.
     """
     readme_filename = f"README_{dataset_name}.md"
     with open(readme_filename, "w") as f:
@@ -319,6 +349,7 @@ def save_readme(story, charts, dataset_name):
         for chart in charts:
             f.write(f"![{chart}]({chart})\n")
     print(f"Results saved to {readme_filename}")
+
 if __name__ == "__main__":
     # Check for CSV filename
     if len(sys.argv) < 2:
@@ -348,4 +379,3 @@ if __name__ == "__main__":
     print(f"Step 4: Saving results to README_{dataset_name}.md...")
     save_readme(story, charts, dataset_name)
     print(f"Analysis complete for {file_path}. Results saved to README_{dataset_name}.md and PNG files.")
-        
